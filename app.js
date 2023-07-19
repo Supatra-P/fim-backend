@@ -1,7 +1,11 @@
 import express from 'express';
 import { config } from 'dotenv';
 import morgan from 'morgan';
-import mongoose from 'mongoose';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import userRouter from './routes/user.js';
+import { errorMiddleware } from './middleware/error.js';
 
 export const app = express();
 
@@ -11,8 +15,26 @@ config({
 });
 
 // Middleware
-app.use(morgan('dev'));
+app.use(morgan('dev')); // log request
+app.use(express.json()); // parse json payload application/json
+app.use(express.urlencoded({extended: true})); // encode payload from post url application/x-www-form-urlencoded
+app.use(helmet()); // protect api like XXS
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+app.use(cookieParser()); // make cookies readable or useable
+app.use(
+    cors({
+        origin: [process.env.FRONTEND_URL],
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+    })
+); // cross-origin resource sharing
+
+// Routes
+app.use('/api/v1/users', userRouter);
 
 app.get('/', (req, res) => {
-    res.send('Hello World');
+    res.send('Welcome to Fim api!');
 });
+
+// Error Handing
+app.use(errorMiddleware);
