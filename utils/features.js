@@ -46,7 +46,7 @@ export const sendEmail = async (email, subject, payload, next) => {
                 But don't worry! You can click the following link below to reset your password:
             </p>
             <br>
-            <a href='${link}'>Reset your password</a>
+            <a href='${payload.link}'>Reset your password</a>
             <br>
             <p>If you don’t use this link within 3 hours, it will expire.</p>
             <br><br>
