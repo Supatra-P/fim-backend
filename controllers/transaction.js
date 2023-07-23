@@ -1,7 +1,6 @@
 import ErrorHandler from "../middleware/error.js";
 import DetailInEx from "../models/detailinex.js";
 import Transaction from "../models/transaction.js"
-import User from "../models/user.js";
 
 export const getTransactions = async (req, res, next) => {
     try {
@@ -182,6 +181,25 @@ export const deleteTransaction = async (req, res, next) => {
             success: true,
             data: {
                 message: 'Successfully deleted',
+            }
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const filterCategory = async (req, res, next) => {
+    try {
+        let { cate } = req.params;
+        
+        if (cate === 'foodndrink') cate = 'Food & Drink';
+        const transactions = await DetailInEx.find({ category: cate }).select('-createdAt -updatedAt -__v');
+
+        res.status(200).json({
+            success: true,
+            data: {
+                message: `Filter ${cate} successfully.`,
+                results: transactions
             }
         })
     } catch (error) {
