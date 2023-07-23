@@ -15,7 +15,7 @@ export const sendCookie = (user, res, statusCode = 200, message) => {
             sameSite: process.env.NODE_ENV === "Development" ? "lax" : "none",
             secure: process.env.NODE_ENV === "Development" ? false : true,
         })
-        .json({ success: true, message });
+        .json({ success: true, message, token: token });
 }
 
 export const sendEmail = async (email, subject, payload, next) => {

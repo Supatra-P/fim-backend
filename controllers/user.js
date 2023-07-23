@@ -4,13 +4,14 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { sendCookie, sendEmail } from '../utils/features.js';
 import ErrorHandler from '../middleware/error.js';
+import Transaction from '../models/transaction.js';
 
 export const register = async (req, res, next) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { username, email, password, role } = req.body;
 
         // Check user exist
-        let user = await User.findOne({ $or: [{ name }, { email }] });
+        let user = await User.findOne({ $or: [{ name: username }, { email }] });
         if (user) return next(new ErrorHandler('Username or email already exist.', 400));
 
         // Check length password
@@ -22,14 +23,23 @@ export const register = async (req, res, next) => {
 
         // Create new user
         user = await User.create({
-            name,
+            name: username,
             email,
             password: hashedPassword,
-            role
+            role,
         });
 
         // Set cookies
         sendCookie(user, res, 201, 'Register successfully.');
+
+        // Create initial transaction
+        await Transaction.create({
+            userId: user._id,
+            totalBalance: 0,
+            totalIncome: 0,
+            totalExpense: 0,
+            details: []
+        })
     } catch (error) {
         next(error);
     }
@@ -49,6 +59,18 @@ export const login = async (req, res, next) => {
 
         // Set cookies
         sendCookie(user, res, 200, 'Login successfully.');
+
+        // Create initial transaction
+        const transaction = await Transaction.findOne({ userId: user._id });
+        if (!transaction) {
+            await Transaction.create({
+                userId: user._id,
+                totalBalance: 0,
+                totalIncome: 0,
+                totalExpense: 0,
+                details: []
+            })
+        }
     } catch (error) {
         next(error);
     }
