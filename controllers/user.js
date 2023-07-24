@@ -94,12 +94,7 @@ export const logout = (req, res) => {
 export const getMyProfile = (req, res) => {
     // Send data if user has authenticated
     // console.log(req.cookies)
-    res.status(200).cookie("token", req.cookies, {
-        httpOnly: true,
-        expires: new Date(Date.now()),
-        sameSite: process.env.NODE_ENV === "Development" ? "lax" : "none",
-        secure: process.env.NODE_ENV === "Development" ? false : true,
-    }).send({
+    res.status(200).send({
         success: true,
         message: `Welcome ${req.user.name}!`
     });
