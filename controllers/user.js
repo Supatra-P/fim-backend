@@ -93,10 +93,10 @@ export const logout = (req, res) => {
 
 export const getMyProfile = (req, res) => {
     // Send data if user has authenticated
-    // console.log(req.cookies)
+    // console.log(req)
     res.status(200).send({
         success: true,
-        message: `Welcome ${req.user.name}!`
+        message: `Welcome ${req.user.name}!`,
     });
 }
 
