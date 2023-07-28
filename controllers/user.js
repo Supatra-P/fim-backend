@@ -97,6 +97,9 @@ export const getMyProfile = (req, res) => {
     res.status(200).send({
         success: true,
         message: `Welcome ${req.user.name}!`,
+        data: {
+            name: req.user.name,
+        }
     });
 }
 
