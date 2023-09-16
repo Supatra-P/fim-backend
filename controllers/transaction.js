@@ -17,11 +17,34 @@ export const getTransactions = async (req, res, next) => {
         res.status(200).json({
             success: true,
             data: {
+                name: req.user.name,
                 message: 'successfully fetched all the Transactions',
                 totalBalance: totalTransactions.totalBalance,
                 totalIncome: totalTransactions.totalIncome,
                 totalExpense: totalTransactions.totalExpense,
                 allDetails
+            }
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getTransaction = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { title, date, trans, amount, category } = await DetailInEx.findById(id);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                name: req.user.name,
+                message: 'Get a transaction successfully',
+                title,
+                date,
+                trans,
+                amount,
+                category
             }
         })
     } catch (error) {
@@ -51,9 +74,9 @@ export const addTransaction = async (req, res, next) => {
             totalIncome = transaction.totalIncome,
             totalExpense = transaction.totalExpense;
         if (trans === 'Income') {
-            totalIncome += amount;
+            totalIncome += Number(amount);
         } else if (trans === 'Expense') {
-            totalExpense += amount;
+            totalExpense += Number(amount);
         }
         totalBalance = totalIncome - totalExpense;
         await Transaction.updateOne(
